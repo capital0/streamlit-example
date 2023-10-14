@@ -5,20 +5,15 @@ import pandas as pd
 import streamlit as st
 
 """
-# You can find my answers here.
-
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
-
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
+# I love Business Analytics. 
+This page is dedicated to my answers to homework questions.
+Enjoy the art! I used streamlit to make this work. All code is written by Sinan.
 """
 
 
 with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+    total_points = st.slider("Please select hour", 1, 24, 1)
+    num_turns = st.slider("Please select year", 2016, 2023, 1)
 
     Point = namedtuple('Point', 'x y')
     data = []
