@@ -3,6 +3,22 @@ import altair as alt
 import math
 import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
+
+consumption_df=pd.read_csv("consumption.csv")
+spotprice_df=pd.read_csv("spotprice.csv")
+def clean_and_convert(value):
+    if isinstance(value, str):
+        return float(value.replace(',', ''))
+    else:
+        return value
+consumption_df["Consumption (MWh)"] = consumption_df["Consumption (MWh)"].apply(clean_and_convert)
+def extract_year(date_string):
+    year = date_string.split('.')[-1]
+    return year
+consumption_df['Year'] = consumption_df['Date'].apply(extract_year)
+consumption_hourly = consumption_df.groupby(["Hour","Year"])["Consumption (MWh)"].mean().reset_index()
 
 """
 # I love Business Analytics. 
@@ -12,22 +28,10 @@ Enjoy the art! I used streamlit to make this work. All code is written by Sinan.
 
 
 with st.echo(code_location='below'):
-    total_points = st.slider("Please select hour", 1, 24, 1)
-    num_turns = st.slider("Please select year", 2016, 2023, 1)
-
-    Point = namedtuple('Point', 'x y')
-    data = []
-
-    points_per_turn = total_points / num_turns
-
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
-
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+    pivot_df = consumption_hourly.pivot(index='Hour', columns='Year', values='Consumption (MWh)')
+    fig, ax = pivot_df.plot(kind='bar', stacked=True, figsize=(20, 10))
+    plt.title('Average Hourly Consumption YoY')
+    plt.xlabel('Hours')
+    plt.ylabel('Consumption (MWh)')
+    plt.legend(title='Year')
+    st.pyplot(fig)
